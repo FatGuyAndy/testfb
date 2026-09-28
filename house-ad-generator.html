@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="theme-color" content="#1877F2">
+  <title>房屋廣告快速產生器 | Marketplace 助手</title>
+  <style>
+    :root {
+      --primary: #1877F2;
+      --primary-dark: #166FE5;
+      --bg: #f0f2f5;
+      --card: #ffffff;
+      --text: #1c1e21;
+      --text-secondary: #65676b;
+      --border: #dddfe2;
+      --success: #42b72a;
+      --radius: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding-bottom: 80px;
+    }
+
+    .header {
+      background: var(--primary);
+      color: white;
+      padding: 16px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    }
+
+    .header h1 {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+
+    .header p {
+      font-size: 0.85rem;
+      opacity: 0.9;
+      margin-top: 2px;
+    }
+
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 20px;
+      margin-bottom: 16px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+
+    .card h2 {
+      font-size: 1.1rem;
+      margin-bottom: 16px;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--text);
+    }
+
+    .form-group .hint {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      margin-top: 4px;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select,
+    textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 1rem;
+      background: #fff;
+      transition: border-color 0.2s;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 2px rgba(24, 119, 242, 0.2);
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: #f0f2f5;
+      padding: 8px 12px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      cursor: pointer;
+      user-select: none;
+      transition: all 0.2s;
+    }
+
+    .checkbox-item:has(input:checked) {
+      background: #e7f3ff;
+      color: var(--primary);
+      font-weight: 500;
+    }
+
+    .checkbox-item input {
+      display: none;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 14px 20px;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      width: 100%;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:active {
+      background: var(--primary-dark);
+    }
+
+    .btn-success {
+      background: var(--success);
+      color: white;
+    }
+
+    .btn-outline {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .btn-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .result-box {
+      background: #f8f9fa;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px;
+      margin-bottom: 12px;
+      position: relative;
+    }
+
+    .result-box h3 {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .result-content {
+      white-space: pre-wrap;
+      font-size: 0.95rem;
+      line-height: 1.6;
+      word-break: break-word;
+    }
+
+    .copy-btn {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      cursor: pointer;
+    }
+
+    .copy-btn.copied {
+      background: var(--success);
+    }
+
+    .tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag {
+      background: #e7f3ff;
+      color: var(--primary);
+      padding: 6px 12px;
+      border-radius: 16px;
+      font-size: 0.9rem;
+    }
+
+    .footer-tip {
+      text-align: center;
+      padding: 20px;
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+    }
+
+    .sticky-bottom {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      padding: 12px 16px;
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+      z-index: 99;
+    }
+
+    .sticky-bottom .btn {
+      max-width: 600px;
+      margin: 0 auto;
+      display: block;
+    }
+
+    @media (min-width: 600px) {
+      .container {
+        padding: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>🏠 房屋廣告快速產生器</h1>
+    <p>專為 Facebook Marketplace 設計 · 一鍵產生優化文案</p>
+  </div>
+
+  <div class="container">
+    <!-- 基本資料 -->
+    <div class="card">
+      <h2>📋 基本資料</h2>
+      
+      <div class="form-group">
+        <label>物件類型</label>
+        <select id="propertyType">
+          <option value="公寓">公寓</option>
+          <option value="大樓">大樓</option>
+          <option value="透天">透天</option>
+          <option value="別墅">別墅</option>
+          <option value="華廈">華廈</option>
+          <option value="套房">套房</option>
+          <option value="其他">其他</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label>總價（萬）</label>
+          <input type="number" id="price" placeholder="例如：1280" inputmode="numeric">
+        </div>
+        <div class="form-group">
+          <label>坪數（建坪）</label>
+          <input type="number" id="ping" placeholder="例如：32.5" step="0.1" inputmode="decimal">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label>格局</label>
+          <input type="text" id="layout" placeholder="例如：3房2廳2衛">
+        </div>
+        <div class="form-group">
+          <label>樓層</label>
+          <input type="text" id="floor" placeholder="例如：8/12">
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label>屋齡（年）</label>
+          <input type="number" id="age" placeholder="例如：5" inputmode="numeric">
+        </div>
+        <div class="form-group">
+          <label>車位</label>
+          <select id="parking">
+            <option value="無">無</option>
+            <option value="平面車位">平面車位</option>
+            <option value="機械車位">機械車位</option>
+            <option value="坡道平面">坡道平面</option>
+            <option value="坡道機械">坡道機械</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label>區域 / 地址</label>
+        <input type="text" id="location" placeholder="例如：台北市大安區 / 近捷運忠孝復興">
+        <div class="hint">建議填寫行政區 + 捷運站或地標，方便買家搜尋</div>
+      </div>
+    </div>
+
+    <!-- 特色標籤 -->
+    <div class="card">
+      <h2>✨ 物件特色（可多選）</h2>
+      <div class="checkbox-group" id="features">
+        <label class="checkbox-item"><input type="checkbox" value="近捷運"> 近捷運</label>
+        <label class="checkbox-item"><input type="checkbox" value="近公園"> 近公園</label>
+        <label class="checkbox-item"><input type="checkbox" value="近學校"> 近學校</label>
+        <label class="checkbox-item"><input type="checkbox" value="有管理"> 有管理</label>
+        <label class="checkbox-item"><input type="checkbox" value="新裝潢"> 新裝潢</label>
+        <label class="checkbox-item"><input type="checkbox" value="低公設"> 低公設</label>
+        <label class="checkbox-item"><input type="checkbox" value="景觀戶"> 景觀戶</label>
+        <label class="checkbox-item"><input type="checkbox" value="邊間"> 邊間</label>
+        <label class="checkbox-item"><input type="checkbox" value="方正格局"> 方正格局</label>
+        <label class="checkbox-item"><input type="checkbox" value="採光佳"> 採光佳</label>
+        <label class="checkbox-item"><input type="checkbox" value="可寵物"> 可寵物</label>
+        <label class="checkbox-item"><input type="checkbox" value="可短期"> 可短期</label>
+        <label class="checkbox-item"><input type="checkbox" value="投資自住皆宜"> 投資自住皆宜</label>
+        <label class="checkbox-item"><input type="checkbox" value="屋主誠售"> 屋主誠售</label>
+      </div>
+    </div>
+
+    <!-- 補充說明 -->
+    <div class="card">
+      <h2>📝 補充說明（選填）</h2>
+      <div class="form-group">
+        <label>想特別強調的重點</label>
+        <textarea id="extra" placeholder="例如：屋況良好、可直接入住、含部分家具家電、近期剛整修廚房與衛浴..."></textarea>
+      </div>
+    </div>
+
+    <!-- 產生按鈕 -->
+    <button class="btn btn-primary" onclick="generateAd()" style="margin-bottom: 20px;">
+      🚀 產生優化廣告文案
+    </button>
+
+    <!-- 結果區 -->
+    <div id="resultSection" style="display: none;">
+      <div class="card">
+        <h2>✅ 產生結果（可直接複製使用）</h2>
+
+        <div class="result-box">
+          <h3>
+            <span>📌 建議標題</span>
+            <button class="copy-btn" onclick="copyText('titleResult', this)">複製</button>
+          </h3>
+          <div class="result-content" id="titleResult"></div>
+        </div>
+
+        <div class="result-box">
+          <h3>
+            <span>📄 完整說明文案</span>
+            <button class="copy-btn" onclick="copyText('descResult', this)">複製</button>
+          </h3>
+          <div class="result-content" id="descResult"></div>
+        </div>
+
+        <div class="result-box">
+          <h3>
+            <span>🏷️ 建議標籤</span>
+            <button class="copy-btn" onclick="copyText('tagsResult', this)">複製</button>
+          </h3>
+          <div class="result-content" id="tagsResult"></div>
+        </div>
+
+        <div class="result-box">
+          <h3>
+            <span>📍 地圖定位建議</span>
+          </h3>
+          <div class="result-content" id="mapTip"></div>
+        </div>
+
+        <div class="btn-group">
+          <button class="btn btn-success" onclick="copyAll()">📋 一鍵複製全部</button>
+          <button class="btn btn-outline" onclick="resetForm()">🔄 重新填寫</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="footer-tip">
+      提示：產生後直接複製到 Facebook Marketplace 手機版貼上即可。<br>
+      把此頁面加入手機主畫面，就能像正式 APP 一樣使用。
+    </div>
+  </div>
+
+  <script>
+    function getSelectedFeatures() {
+      const checkboxes = document.querySelectorAll('#features input:checked');
+      return Array.from(checkboxes).map(cb => cb.value);
+    }
+
+    function generateAd() {
+      const type = document.getElementById('propertyType').value;
+      const price = document.getElementById('price').value;
+      const ping = document.getElementById('ping').value;
+      const layout = document.getElementById('layout').value.trim();
+      const floor = document.getElementById('floor').value.trim();
+      const age = document.getElementById('age').value;
+      const parking = document.getElementById('parking').value;
+      const location = document.getElementById('location').value.trim();
+      const extra = document.getElementById('extra').value.trim();
+      const features = getSelectedFeatures();
+
+      // 基本驗證
+      if (!price && !ping && !location) {
+        alert('請至少填寫價格、坪數或區域其中一項，才能產生較完整的文案喔！');
+        return;
+      }
+
+      // === 產生標題 ===
+      let titleParts = [];
+      if (location) titleParts.push(location.split(/[\/\s]/)[0]); // 取區域前半
+      if (type) titleParts.push(type);
+      if (layout) titleParts.push(layout);
+      if (ping) titleParts.push(ping + '坪');
+      if (features.includes('近捷運')) titleParts.push('近捷運');
+      if (features.includes('新裝潢')) titleParts.push('新裝潢');
+      if (features.includes('屋主誠售')) titleParts.push('屋主誠售');
+      if (price) titleParts.push(price + '萬');
+
+      let title = titleParts.filter(Boolean).join('｜');
+      if (title.length > 50) {
+        // 太長就精簡
+        title = [location ? location.split(/[\/\s]/)[0] : '', type, layout, ping ? ping + '坪' : '', price ? price + '萬' : '']
+          .filter(Boolean).join('｜');
+      }
+      if (!title) title = '精美房屋出售';
+
+      // === 產生說明文案 ===
+      let desc = [];
+      desc.push('【物件資訊】');
+      if (type) desc.push(`• 類型：${type}`);
+      if (layout) desc.push(`• 格局：${layout}`);
+      if (ping) desc.push(`• 建坪：${ping} 坪`);
+      if (floor) desc.push(`• 樓層：${floor}`);
+      if (age) desc.push(`• 屋齡：約 ${age} 年`);
+      if (parking && parking !== '無') desc.push(`• 車位：${parking}`);
+      if (location) desc.push(`• 位置：${location}`);
+      if (price) desc.push(`• 總價：${price} 萬`);
+
+      if (features.length > 0) {
+        desc.push('');
+        desc.push('【亮點特色】');
+        features.forEach(f => desc.push(`✓ ${f}`));
+      }
+
+      if (extra) {
+        desc.push('');
+        desc.push('【補充說明】');
+        desc.push(extra);
+      }
+
+      desc.push('');
+      desc.push('歡迎預約看屋，有興趣請私訊我，謝謝！');
+      desc.push('（資訊僅供參考，實際以現況為準）');
+
+      // === 產生標籤 ===
+      let tags = ['#房屋出售', '#中古屋', '#不動產'];
+      if (location) {
+        const area = location.split(/[\/\s]/)[0];
+        tags.push(`#${area}`);
+        tags.push(`#${area}房屋`);
+      }
+      if (type) tags.push(`#${type}`);
+      if (features.includes('近捷運')) tags.push('#近捷運');
+      if (features.includes('有管理')) tags.push('#社區管理');
+      if (features.includes('新裝潢')) tags.push('#新裝潢');
+      if (price && price < 1000) tags.push('#千萬內');
+      if (price && price >= 1000 && price < 2000) tags.push('#千萬起跳');
+      tags.push('#自住投資');
+      tags.push('#看屋預約');
+
+      // 去重
+      tags = [...new Set(tags)];
+
+      // === 地圖建議 ===
+      let mapTip = '在 Marketplace 上架時，請務必開啟「地圖定位」功能，並盡量定位到正確的行政區或捷運站附近。\n';
+      if (location) {
+        mapTip += `\n建議定位關鍵字：${location}\n這樣比較容易被附近買家搜尋到。`;
+      } else {
+        mapTip += '\n建議至少定位到「行政區」層級，不要只定位到城市。';
+      }
+
+      // 顯示結果
+      document.getElementById('titleResult').textContent = title;
+      document.getElementById('descResult').textContent = desc.join('\n');
+      document.getElementById('tagsResult').textContent = tags.join(' ');
+      document.getElementById('mapTip').textContent = mapTip;
+
+      document.getElementById('resultSection').style.display = 'block';
+      document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    function copyText(elementId, btn) {
+      const text = document.getElementById(elementId).textContent;
+      navigator.clipboard.writeText(text).then(() => {
+        const original = btn.textContent;
+        btn.textContent = '已複製！';
+        btn.classList.add('copied');
+        setTimeout(() => {
+          btn.textContent = original;
+          btn.classList.remove('copied');
+        }, 1500);
+      }).catch(() => {
+        // 備用方案
+        const range = document.createRange();
+        range.selectNode(document.getElementById(elementId));
+        window.getSelection().removeAllRanges();
+        window.getSelection().addRange(range);
+        document.execCommand('copy');
+        window.getSelection().removeAllRanges();
+        btn.textContent = '已複製！';
+        setTimeout(() => btn.textContent = '複製', 1500);
+      });
+    }
+
+    function copyAll() {
+      const title = document.getElementById('titleResult').textContent;
+      const desc = document.getElementById('descResult').textContent;
+      const tags = document.getElementById('tagsResult').textContent;
+      const all = `【標題】\n${title}\n\n【說明】\n${desc}\n\n【標籤】\n${tags}`;
+      
+      navigator.clipboard.writeText(all).then(() => {
+        alert('已全部複製！可以直接貼到 Facebook Marketplace 了。');
+      }).catch(() => {
+        alert('複製失敗，請手動選取文字複製。');
+      });
+    }
+
+    function resetForm() {
+      if (confirm('確定要清空所有資料重新填寫嗎？')) {
+        document.querySelectorAll('input[type="text"], input[type="number"], textarea').forEach(el => el.value = '');
+        document.querySelectorAll('input[type="checkbox"]').forEach(el => el.checked = false);
+        document.getElementById('propertyType').selectedIndex = 0;
+        document.getElementById('parking').selectedIndex = 0;
+        document.getElementById('resultSection').style.display = 'none';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+  </script>
+</body>
+</html>
